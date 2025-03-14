@@ -1,6 +1,7 @@
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { envs } from './configuration';
 
 async function bootstrap() {
   // create app
@@ -8,6 +9,9 @@ async function bootstrap() {
     AppModule,
     {
       transport: Transport.TCP,
+      options: {
+        port: envs.port,
+      }
     },
   );
 
