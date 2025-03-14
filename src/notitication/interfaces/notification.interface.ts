@@ -1,3 +1,5 @@
+import { CreateNotiticationDto } from "../dto/create-notitication.dto";
+
 export interface NotificationFactoryInterface {
-  sendNotification(payload: any): Promise<void>;
+  sendNotification(payload: CreateNotiticationDto): Promise<CreateNotiticationDto | void>;
 }
