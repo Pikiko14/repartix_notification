@@ -1,3 +1,6 @@
+import * as path from 'path';
+import { promises as fs } from 'fs';
+import Handlebars from 'handlebars';
 import { Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { envs } from 'src/configuration';
@@ -20,20 +23,84 @@ export class MailStrategy implements NotificationFactoryInterface {
     });
   }
 
+  /**
+   * Send mail notification
+   * @param payload
+   * @return { void }
+   */
   async sendNotification(
     payload: CreateNotiticationDto,
   ): Promise<CreateNotiticationDto | void> {
     try {
-      const mailOptions = {
-        from: `${envs.smtp_user}`,
-        to: payload.destinatary,
-        subject: payload.type_notification,
-        html: '<p>Hola bienvenido</p>',
-      };
-      const info = await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Correo enviado ha ${mailOptions.to}, Id message: ${info.messageId}`);
+      // prepare html
+      const html = await this.loadMailTemplate(
+        payload.type_notification,
+        payload.data,
+      );
+
+      if (html) {
+        // send email
+        const mailOptions = {
+          from: `${envs.smtp_user}`,
+          to: payload.destinatary,
+          subject: payload.type_notification,
+          html,
+        };
+        const info = await this.transporter.sendMail(mailOptions);
+
+        // success log
+        this.logger.log(
+          `Correo enviado ha ${mailOptions.to}, Id message: ${info.messageId}`,
+        );
+      } else {
+        this.logger.error(
+          `No se a podido cargar la plantilla correspondiente para: ${payload.type_notification}`,
+        );
+      }
     } catch (error) {
-      throw new Error(error);
+      this.logger.error(
+        `Ha ocurrido un error al enviar el correo electrónico: ${error.message}`,
+      );
+    }
+  }
+
+  /**
+   * Load template
+   * @return { string }
+   */
+  async loadMailTemplate(typeNotification: string, data: any) {
+    try {
+      // init html
+      let html = ``;
+      let mailData = {};
+
+      // get path templates
+      const templatePath = path.join(
+        __dirname,
+        '../../../../src/templates/emails',
+      );
+
+      // load welcome template email
+      if (typeNotification === 'welcome_notification') {
+        html = await fs.readFile(
+          `${templatePath}/welcome.template.html`,
+          'utf-8',
+        );
+        mailData = {
+          full_name: data?.profile?.full_name,
+          username: data?.username,
+          password: data?.password_string,
+        };
+      }
+
+      // Compile template
+      const template = Handlebars.compile(html);
+      html = template(mailData);
+      return html;
+    } catch (error) {
+      this.logger.error(
+        `Ha ocurrido un error al cargar la plantilla: ${error.message}`,
+      );
     }
   }
 }
