@@ -90,6 +90,7 @@ export class MailStrategy implements NotificationFactoryInterface {
           full_name: data?.profile?.full_name,
           username: data?.username,
           password: data?.password_string,
+          url_app: envs.app_url,
         };
       }
 
