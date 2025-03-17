@@ -94,6 +94,19 @@ export class MailStrategy implements NotificationFactoryInterface {
         };
       }
 
+      // load recovery password template email
+      if (typeNotification === 'recovery_password_notification') {
+        html = await fs.readFile(
+          `${templatePath}/recovery-password.template.html`,
+          'utf-8',
+        );
+        mailData = {
+          username: data?.username,
+          url_app: envs.app_url,
+          recovery_token: data?.recovery_token,
+        };
+      }
+
       // Compile template
       const template = Handlebars.compile(html);
       html = template(mailData);
