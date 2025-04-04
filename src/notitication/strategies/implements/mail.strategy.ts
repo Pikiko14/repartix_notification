@@ -107,6 +107,19 @@ export class MailStrategy implements NotificationFactoryInterface {
         };
       }
 
+      // load payment success template
+      if (typeNotification === 'success_payment_notification') {
+        html = await fs.readFile(
+          `${templatePath}/payment-success.template.html`,
+          'utf-8',
+        );
+        console.log(data);
+        mailData = {
+          username: data?.user?.username,
+          subscription_id: data._id,
+        };
+      }
+
       // Compile template
       const template = Handlebars.compile(html);
       html = template(mailData);
