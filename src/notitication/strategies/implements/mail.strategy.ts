@@ -113,7 +113,6 @@ export class MailStrategy implements NotificationFactoryInterface {
           `${templatePath}/payment-success.template.html`,
           'utf-8',
         );
-        console.log(data);
         mailData = {
           username: data?.user?.username,
           subscription_id: data._id,
