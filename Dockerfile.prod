@@ -7,13 +7,24 @@ COPY package.json ./
 COPY package-lock.json ./
 
 # Install dependencies with legacy peer deps for compatibility
-RUN npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps --only=production
 
 # Copy source code
 COPY . .
 
 # Build the application
 RUN npm run build
+
+# Remove dev dependencies
+RUN npm prune --production
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nestjs -u 1001
+
+# Change ownership
+RUN chown -R nestjs:nodejs /usr/src/notification_microservice
+USER nestjs
 
 # Expose port
 EXPOSE 3004

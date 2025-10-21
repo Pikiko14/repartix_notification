@@ -11,6 +11,7 @@ interface EnvVars {
   SMTP_PASSWORD: string;
   APP_URL: string;
   NATS_URL: string;
+  MONGO_URL: string;
 }
 
 const envsSchema = joi.object({
@@ -23,6 +24,7 @@ const envsSchema = joi.object({
   SMTP_SECURE: joi.string().required(),
   SMTP_PASSWORD: joi.string().required(),
   NATS_URL: joi.string().required(),
+  MONGO_URL: joi.string().required(),
 })
 .unknown(true);
 
@@ -48,4 +50,6 @@ export const envs = {
   smtp_secure: envVars.SMTP_SECURE,
   smtp_password: envVars.SMTP_PASSWORD,
   nats_server: envVars.NATS_URL,
+  mongo_url: envVars.MONGO_URL,
+  nats_service_name: 'nats_service',
 }
