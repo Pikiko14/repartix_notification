@@ -22,9 +22,18 @@ export class InternalNotificationsService {
 
       this.logger.log(`Notification created: ${notification._id} for parent: ${createDto.parent_id}`);
 
+      // Validar que el room esté definido
+      const room = createDto.room || `admin-${createDto.parent_id}`;
+      
+      if (!room || room === '') {
+        this.logger.error(`❌ Notificación creada sin room válido. parent_id: ${createDto.parent_id}, room proporcionado: ${createDto.room}`);
+      } else {
+        this.logger.log(`📡 Emitiendo notificación WebSocket al room: ${room} para parent_id: ${createDto.parent_id}`);
+      }
+
       // Emitir evento para WebSocket en tiempo real
       this.client.emit('create-websocket-notification', {
-        room: createDto.room || '',
+        room: room,
         ...notification.toObject(),
       });
 

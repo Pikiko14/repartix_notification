@@ -5,6 +5,7 @@ export enum NotificationType {
   ORDER_STATUS_UPDATED = 'order_status_updated',
   ORDER_NEWS_CREATED = 'order_news_created',
   ORDER_PAYMENT_CREATED = 'order_payment_created',
+  REPORT_PDF_GENERATED = 'report_pdf_generated',
 }
 
 export enum NotificationPriority {
